@@ -3,7 +3,6 @@ const uuid = require('uuid')
 
 module.exports = {
     Query : {
-        greetings : ()=> null,
         
         tasks : ()=>tasks,
         

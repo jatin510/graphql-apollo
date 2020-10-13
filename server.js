@@ -1,71 +1,38 @@
-const express = require('express')
-const {ApolloServer,gql} = require('apollo-server-express')
-const cors = require('cors')
-const dotenv = require('dotenv')
-const uuid = require('uuid')
-dotenv.config()
+const express = require("express");
+const { ApolloServer, gql } = require("apollo-server-express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const uuid = require("uuid");
+dotenv.config();
+const { connection } = require("./database/util/index.js");
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000
-
-const { tasks ,users} = require('./constants')
-const resolvers= require('./resolvers')
+const { tasks, users } = require("./constants");
+const resolvers = require("./resolvers");
+const typeDefs = require("./typeDefs");
 // setup env variables
 
+const app = express();
 
-const app = express()
+// db connectivity
+connection();
 
 // body parser middleware
-app.use(express.json())
-app.use(cors())
-
-const typeDefs = gql`
-    type Query {
-        greetings : [String!]
-        tasks : [Task!]
-        task(id : ID!) : Task
-        users : [User!]
-        user(id  : ID!) : User
-    }
-
-    input createTaskInput{
-        name : String !
-        completed : Boolean!
-        userId : ID!
-    }
-
-    type Mutation {
-        createTask(input : createTaskInput) : Task
-    }
-
-    type User {
-        id : ID!
-        name : String!
-        email : String!
-        tasks : [Task!]
-    }
-
-    type Task {
-        id : ID!
-        name : String!
-        completed : Boolean!
-        user : User!
-    }
-`;
-
+app.use(express.json());
+app.use(cors());
 
 const apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers
-})
-apolloServer.applyMiddleware({app,path : '/graphql'})
+  typeDefs,
+  resolvers,
+});
 
-app.use('/',(req,res,next)=>{
-    res.send({message : 'Hello'})
+apolloServer.applyMiddleware({ app, path: "/graphql" });
 
-})
+app.use("/", (req, res, next) => {
+  res.send({ message: "Hello" });
+});
 
-
-app.listen(PORT, ()=>{
-    console.log(`Server listening on PORT : ${PORT}`)
-    console.log(`Graphql endpoint ${apolloServer.graphqlPath}`)
-})
+app.listen(PORT, () => {
+  console.log(`Server listening on PORT : ${PORT}`);
+  console.log(`Graphql endpoint ${apolloServer.graphqlPath}`);
+});

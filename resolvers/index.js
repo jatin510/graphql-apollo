@@ -1,7 +1,10 @@
-const userResolver = require('./user')
-const taskResolver = require('./task')
+const { GraphQLDateTime } = require("graphql-iso-date");
 
-module.exports = {
-    userResolver,
-    taskResolver
-}
+const userResolver = require("./user");
+const taskResolver = require("./task");
+
+const customeDateScalarResolver = {
+  Date: GraphQLDateTime,
+};
+
+module.exports = [userResolver, taskResolver, customeDateScalarResolver];
